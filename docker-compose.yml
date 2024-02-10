@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+    database:
+        image: mongo
+        restart: always
+        container_name: blog-database
+        ports:
+            - ${MONGO_PORT}:27017
+        networks:
+            app_network:
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    api:
+        restart: unless-stopped
+        container_name: blog-api
+        build:
+            context: .
+            dockerfile: Dockerfile
+        depends_on:
+            - database
+        ports:
+            - 48312:${NODE_PORT}
+        environment:
+            - MONGO_HOST=172.18.0.1
+        networks:
+            app_network:
+
+networks:
+    app_network:
