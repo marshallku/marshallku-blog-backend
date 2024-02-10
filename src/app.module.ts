@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import * as Joi from "joi";
 import { ConfigModule } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
+import { MONGO_CONNECTION_NAME } from "#constants";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthController } from "./auth/auth.controller";
@@ -21,7 +22,7 @@ import { UserModule } from "./user/user.module";
             }),
         }),
         MongooseModule.forRoot(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/`, {
-            connectionName: "default",
+            connectionName: MONGO_CONNECTION_NAME,
         }),
         AuthModule,
         UserModule,
