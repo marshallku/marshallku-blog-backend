@@ -9,9 +9,6 @@ services:
             - ${MONGO_PORT}:27017
         networks:
             app_network:
-        environment:
-            - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
-            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     api:
         restart: unless-stopped
         container_name: blog-api

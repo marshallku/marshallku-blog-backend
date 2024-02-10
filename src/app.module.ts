@@ -18,16 +18,11 @@ import { UserModule } from "./user/user.module";
                 NODE_PORT: Joi.string().required(),
                 MONGO_PORT: Joi.string().required(),
                 MONGO_HOST: Joi.string().required(),
-                MONGO_USERNAME: Joi.string().required(),
-                MONGO_PASSWORD: Joi.string().required(),
             }),
         }),
-        MongooseModule.forRoot(
-            `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/`,
-            {
-                connectionName: "default",
-            },
-        ),
+        MongooseModule.forRoot(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/`, {
+            connectionName: "default",
+        }),
         AuthModule,
         UserModule,
     ],
