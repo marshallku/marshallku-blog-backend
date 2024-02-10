@@ -1,0 +1,19 @@
+{
+    "words": [
+        "keyspace",
+        "marshallku",
+        "nestjs",
+        "websockets"
+    ],
+    "ignorePaths": [
+        "pnpm-lock.yaml",
+        "package.json",
+        "Dockerfile",
+        "docker-compose.yml",
+        "node_modules/**",
+        "**/node_modules/**",
+        ".git/**",
+        "**/dist/**",
+        "**/coverage/**"
+    ]
+}
