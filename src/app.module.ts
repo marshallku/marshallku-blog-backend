@@ -9,7 +9,6 @@ import { AuthController } from "./auth/auth.controller";
 import { AuthModule } from "./auth/auth.module";
 import { UserController } from "./user/user.controller";
 import { UserModule } from "./user/user.module";
-import { CommentService } from "./comment/comment.service";
 import { CommentController } from "./comment/comment.controller";
 import { CommentModule } from "./comment/comment.module";
 
@@ -28,6 +27,7 @@ import { CommentModule } from "./comment/comment.module";
             }),
         }),
         MongooseModule.forRoot(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/`, {
+            dbName: "default",
             connectionName: MONGO_CONNECTION_NAME,
             auth: {
                 username: process.env.MONGO_USERNAME,
@@ -40,6 +40,6 @@ import { CommentModule } from "./comment/comment.module";
         CommentModule,
     ],
     controllers: [AppController, AuthController, UserController, CommentController],
-    providers: [AppService, CommentService],
+    providers: [AppService],
 })
 export class AppModule {}
