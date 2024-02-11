@@ -9,6 +9,9 @@ import { AuthController } from "./auth/auth.controller";
 import { AuthModule } from "./auth/auth.module";
 import { UserController } from "./user/user.controller";
 import { UserModule } from "./user/user.module";
+import { CommentService } from "./comment/comment.service";
+import { CommentController } from "./comment/comment.controller";
+import { CommentModule } from "./comment/comment.module";
 
 @Module({
     imports: [
@@ -34,8 +37,9 @@ import { UserModule } from "./user/user.module";
         }),
         AuthModule,
         UserModule,
+        CommentModule,
     ],
-    controllers: [AppController, AuthController, UserController],
-    providers: [AppService],
+    controllers: [AppController, AuthController, UserController, CommentController],
+    providers: [AppService, CommentService],
 })
 export class AppModule {}
