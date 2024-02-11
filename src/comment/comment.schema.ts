@@ -1,27 +1,33 @@
-import { Document, HydratedDocument } from "mongoose";
+import { Document, HydratedDocument, Types } from "mongoose";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
 export type CommentDocument = HydratedDocument<Comment>;
 
-@Schema({ timestamps: true })
+@Schema({ collection: "comment", timestamps: true })
 export class Comment extends Document {
-    @Prop({ required: true })
+    @Prop({ required: true, default: "익명" })
     name: string;
 
     @Prop({ required: true, index: true })
     postSlug: string;
 
-    @Prop()
+    @Prop({ default: false })
+    byPostAuthor: boolean;
+
+    @Prop({ default: "" })
     password: string;
 
-    @Prop()
+    @Prop({ default: "" })
     email: string;
 
-    @Prop()
+    @Prop({ default: "" })
     url: string;
 
-    @Prop()
+    @Prop({ required: true })
     body: string;
+
+    @Prop({ type: Types.ObjectId, ref: "comment" })
+    parentCommentId: Types.ObjectId;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
