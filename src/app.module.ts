@@ -19,10 +19,17 @@ import { UserModule } from "./user/user.module";
                 NODE_PORT: Joi.string().required(),
                 MONGO_PORT: Joi.string().required(),
                 MONGO_HOST: Joi.string().required(),
+                MONGO_USERNAME: Joi.string().required(),
+                MONGO_PASSWORD: Joi.string().required(),
             }),
         }),
         MongooseModule.forRoot(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/`, {
             connectionName: MONGO_CONNECTION_NAME,
+            auth: {
+                username: process.env.MONGO_USERNAME,
+                password: process.env.MONGO_PASSWORD,
+            },
+            authSource: "admin",
         }),
         AuthModule,
         UserModule,
