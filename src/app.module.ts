@@ -21,6 +21,7 @@ import { UserModule } from "./user/user.module";
                 MONGO_HOST: Joi.string().required(),
                 MONGO_USERNAME: Joi.string().required(),
                 MONGO_PASSWORD: Joi.string().required(),
+                COOKIE_DOMAIN: Joi.string().required(),
             }),
         }),
         MongooseModule.forRoot(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/`, {
