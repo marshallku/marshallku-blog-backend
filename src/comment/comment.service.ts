@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { Comment } from "./comment.schema";
 import { MONGO_CONNECTION_NAME } from "#constants";
+import { Comment } from "./comment.schema";
 
 @Injectable()
 export class CommentService {
@@ -20,7 +20,15 @@ export class CommentService {
         return await this.commentModel.find().sort({ createdAt: -1 }).limit(count).exec();
     }
 
-    async findByPostSlug(postSlug: string) {
-        return await this.commentModel.find({ postSlug }).exec();
+    async findByPostSlug(postSlug: string): Promise<(Omit<Comment, "parentCommentId"> & { replies: Comment[] })[]> {
+        const comments = await this.commentModel.find({ postSlug }).sort({ createdAt: -1 }).exec();
+        const parentComments = comments.filter((comment) => !comment.parentCommentId);
+        const nestedCommentsWithReplies = parentComments.map((comment) => {
+            const replies = comments.filter((reply) => reply.parentCommentId === comment.id).reverse();
+
+            return { ...comment.toJSON(), replies };
+        });
+
+        return nestedCommentsWithReplies;
     }
 }
