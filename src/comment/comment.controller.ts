@@ -30,7 +30,6 @@ export class CommentController {
     @ApiOperation({ summary: "Get all comments" })
     @Public()
     async getAllComments(@Query("postSlug") postSlug: string) {
-        console.log(postSlug);
         return await this.commentService.findByPostSlug(postSlug);
     }
 
