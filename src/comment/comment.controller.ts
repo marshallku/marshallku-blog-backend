@@ -1,8 +1,10 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { z } from "zod";
 import { Comment } from "./comment.schema";
 import { CommentService } from "./comment.service";
 import { Public } from "#utils";
+import { commentAddRequestSchema } from "./comment.validator";
 
 @Controller("comment")
 @ApiTags("Comment API")
@@ -14,15 +16,18 @@ export class CommentController {
     @ApiOperation({ summary: "Create a comment" })
     @Public()
     async createComment(@Body() comment: Comment) {
-        if (!comment.postSlug) {
-            throw new BadRequestException("Post slug is required");
-        }
+        try {
+            commentAddRequestSchema.parse(comment);
+            return await this.commentService.create(comment);
+        } catch (error) {
+            console.error(error);
 
-        if (!comment.body) {
-            throw new BadRequestException("Body is required");
-        }
+            if (error instanceof z.ZodError) {
+                throw new BadRequestException(error.errors[0].message);
+            }
 
-        return await this.commentService.create(comment);
+            throw new BadRequestException("잘못된 요청입니다.");
+        }
     }
 
     @HttpCode(HttpStatus.OK)
