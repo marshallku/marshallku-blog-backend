@@ -5,7 +5,7 @@ export type CommentDocument = HydratedDocument<Comment>;
 
 @Schema({ collection: "comment", timestamps: true })
 export class Comment extends Document {
-    @Prop({ required: true, default: "익명" })
+    @Prop({ default: "익명" })
     name: string;
 
     @Prop({ required: true, index: true })
