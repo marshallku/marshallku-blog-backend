@@ -17,11 +17,11 @@ export class CommentService {
     }
 
     async find(count: number) {
-        return await this.commentModel.find().sort({ createdAt: -1 }).limit(count).exec();
+        return await this.commentModel.find().select("-email").sort({ createdAt: -1 }).limit(count).exec();
     }
 
     async findByPostSlug(postSlug: string): Promise<(Omit<Comment, "parentCommentId"> & { replies: Comment[] })[]> {
-        const comments = await this.commentModel.find({ postSlug }).sort({ createdAt: -1 }).exec();
+        const comments = await this.commentModel.find({ postSlug }).select("-email").sort({ createdAt: -1 }).exec();
         const parentComments = comments.filter((comment) => !comment.parentCommentId);
         const nestedCommentsWithReplies = parentComments.map((comment) => {
             const replies = comments.filter((reply) => reply.parentCommentId === comment.id).reverse();
