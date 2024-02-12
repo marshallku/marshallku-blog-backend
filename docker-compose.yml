@@ -12,6 +12,9 @@ services:
         environment:
             - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
             - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+        volumes:
+            - ./db:/data/db
+            - ./config:/data/configdb
     api:
         restart: unless-stopped
         container_name: blog-api
