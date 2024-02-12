@@ -18,6 +18,7 @@ import { CommentModule } from "./comment/comment.module";
             isGlobal: true,
             envFilePath: `.env`,
             validationSchema: Joi.object({
+                NODE_ENV: Joi.string().valid("development", "production", "test", "provision").default("development"),
                 NODE_PORT: Joi.string().required(),
                 MONGO_PORT: Joi.string().required(),
                 MONGO_HOST: Joi.string().required(),
