@@ -13,7 +13,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY . .
 
-EXPOSE 3443
+EXPOSE 3008
 
 RUN pnpm build
 
