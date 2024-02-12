@@ -2,7 +2,7 @@ version: "3"
 
 services:
     database:
-        image: mongo
+        image: mongo:${MONGO_TAG}
         restart: always
         container_name: blog-database
         ports:
