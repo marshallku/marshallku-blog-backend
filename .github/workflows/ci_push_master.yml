@@ -1,0 +1,36 @@
+name: CI / Push
+
+on:
+    push:
+        branches:
+            - master
+
+env:
+    CI: true
+
+jobs:
+    lint:
+        name: Check quality with ESLint
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: marshallku/actions/setup-pnpm@master
+            - name: Check code quality
+              run: pnpm lint
+    build:
+        name: Build application
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: marshallku/actions/setup-pnpm@master
+            - name: Build apps and packages
+              run: pnpm build
+    send-notification:
+        needs: [lint, build]
+        if: ${{ failure() }}
+        uses: marshallku/actions/.github/workflows/send-notification.yml@master
+        with:
+            failed: ${{ contains(join(needs.*.result, ','), 'failure') }}
+            message: "CI job failed - push on master"
+        secrets:
+            url: ${{ secrets.DISCORD_WEBHOOK_URI }}
