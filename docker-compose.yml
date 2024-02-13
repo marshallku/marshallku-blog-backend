@@ -27,6 +27,8 @@ services:
             - 48312:${NODE_PORT}
         environment:
             - MONGO_HOST=172.18.0.1
+            - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
+            - NEW_RELIC_APP_NAME=${NEW_RELIC_APP_NAME}
         networks:
             internal_network:
             app_network:

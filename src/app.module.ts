@@ -11,6 +11,7 @@ import { UserController } from "./user/user.controller";
 import { UserModule } from "./user/user.module";
 import { CommentController } from "./comment/comment.controller";
 import { CommentModule } from "./comment/comment.module";
+import { ApmModule } from "./apm/apm.module";
 
 @Module({
     imports: [
@@ -39,6 +40,7 @@ import { CommentModule } from "./comment/comment.module";
         AuthModule,
         UserModule,
         CommentModule,
+        ApmModule,
     ],
     controllers: [AppController, AuthController, UserController, CommentController],
     providers: [AppService],
