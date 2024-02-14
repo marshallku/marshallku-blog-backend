@@ -1,8 +1,10 @@
 import { Module } from "@nestjs/common";
 import * as Joi from "joi";
+import { APP_GUARD } from "@nestjs/core";
 import { ConfigModule } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
 import { MONGO_CONNECTION_NAME } from "#constants";
+import { AuthGuard } from "#auth/auth.guard";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthController } from "./auth/auth.controller";
@@ -43,6 +45,12 @@ import { ApmModule } from "./apm/apm.module";
         ApmModule,
     ],
     controllers: [AppController, AuthController, UserController, CommentController],
-    providers: [AppService],
+    providers: [
+        AppService,
+        {
+            provide: APP_GUARD,
+            useClass: AuthGuard,
+        },
+    ],
 })
 export class AppModule {}
