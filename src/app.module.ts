@@ -14,6 +14,7 @@ import { UserModule } from "./user/user.module";
 import { CommentController } from "./comment/comment.controller";
 import { CommentModule } from "./comment/comment.module";
 import { ApmModule } from "./apm/apm.module";
+import { JwtModule } from "@nestjs/jwt";
 
 @Module({
     imports: [
@@ -39,6 +40,7 @@ import { ApmModule } from "./apm/apm.module";
             },
             authSource: "admin",
         }),
+        JwtModule,
         AuthModule,
         UserModule,
         CommentModule,
