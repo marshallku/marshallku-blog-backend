@@ -30,7 +30,7 @@ export class CommentController {
             throw new BadRequestException("잘못된 요청입니다.");
         }
 
-        if (req.user.role === UserRole.Root) {
+        if (req.user && req.user.role === UserRole.Root) {
             comment.byPostAuthor = true;
         }
 
