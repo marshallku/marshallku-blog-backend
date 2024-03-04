@@ -3,12 +3,15 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { IS_PUBLIC_KEY, TOKEN_COOKIE_KEY } from "#constants";
+import { UserService } from "#user/user.service";
+import { JWTUser } from "#types";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(
         private jwtService: JwtService,
         private reflector: Reflector,
+        private userService: UserService,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -25,10 +28,12 @@ export class AuthGuard implements CanActivate {
         }
 
         try {
-            const payload = await this.jwtService.verifyAsync(token, {
+            const payload: JWTUser = await this.jwtService.verifyAsync(token, {
                 secret: process.env.JWT_SECRET,
             });
-            request["user"] = payload;
+            const user = await this.userService.findOneBy({ _id: payload.sub });
+
+            request["user"] = user;
         } catch {
             if (isPublic) {
                 return true;
