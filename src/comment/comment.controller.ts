@@ -2,8 +2,8 @@ import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post,
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
 import { Public } from "#utils";
+import { User } from "#user/user.schema";
 import { UserRole } from "#constants";
-import { JWTUser } from "#types";
 import { Comment } from "./comment.schema";
 import { CommentService } from "./comment.service";
 import { commentAddRequestSchema } from "./comment.validator";
@@ -17,7 +17,7 @@ export class CommentController {
     @Post("create")
     @ApiOperation({ summary: "Create a comment" })
     @Public()
-    async createComment(@Req() req: { user: JWTUser }, @Body() comment: Comment) {
+    async createComment(@Req() req: { user?: User }, @Body() comment: Comment) {
         try {
             commentAddRequestSchema.parse(comment);
         } catch (error) {
@@ -30,9 +30,7 @@ export class CommentController {
             throw new BadRequestException("잘못된 요청입니다.");
         }
 
-        if (req.user && req.user.role === UserRole.Root) {
-            comment.byPostAuthor = true;
-        }
+        comment.byPostAuthor = req.user && req.user.role === UserRole.Root;
 
         return await this.commentService.create(comment);
     }
