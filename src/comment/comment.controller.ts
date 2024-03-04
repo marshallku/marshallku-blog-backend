@@ -1,12 +1,12 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Req } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
-import { User } from "#user/user.schema";
 import { Public } from "#utils";
+import { UserRole } from "#constants";
+import { JWTUser } from "#types";
 import { Comment } from "./comment.schema";
 import { CommentService } from "./comment.service";
 import { commentAddRequestSchema } from "./comment.validator";
-import { UserRole } from "#constants";
 
 @Controller("comment")
 @ApiTags("Comment API")
@@ -17,7 +17,7 @@ export class CommentController {
     @Post("create")
     @ApiOperation({ summary: "Create a comment" })
     @Public()
-    async createComment(@Req() req: { user: User }, @Body() comment: Comment) {
+    async createComment(@Req() req: { user: JWTUser }, @Body() comment: Comment) {
         try {
             commentAddRequestSchema.parse(comment);
         } catch (error) {
