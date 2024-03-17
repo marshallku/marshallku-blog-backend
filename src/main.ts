@@ -1,4 +1,6 @@
-require("newrelic");
+if (process.env.NEW_RELIC_APP_NAME) {
+    require("newrelic");
+}
 
 import { NestFactory } from "@nestjs/core";
 import * as cookieParser from "cookie-parser";
