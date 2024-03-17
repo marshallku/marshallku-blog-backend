@@ -1,14 +1,18 @@
-name: CI / Push
+name: CI
 
 on:
-    push:
-        branches:
-            - master
+    - push
 
 env:
     CI: true
 
 jobs:
+    check-spelling:
+        name: Check spelling
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: marshallku/actions/check-spelling@master
     lint:
         name: Check quality with ESLint
         runs-on: ubuntu-latest
@@ -26,11 +30,11 @@ jobs:
             - name: Build apps and packages
               run: pnpm build
     send-notification:
-        needs: [lint, build]
+        needs: [check-spelling, lint, build]
         if: ${{ failure() }}
         uses: marshallku/actions/.github/workflows/send-notification.yml@master
         with:
             failed: ${{ contains(join(needs.*.result, ','), 'failure') }}
-            message: "CI job failed - push on master"
+            message: "CI job failed"
         secrets:
             url: ${{ secrets.DISCORD_WEBHOOK_URI }}
