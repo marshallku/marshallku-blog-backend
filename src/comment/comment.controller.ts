@@ -1,7 +1,7 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Req } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
-import { Public } from "#utils";
+import { Public, sendDiscordMessage } from "#utils";
 import { User } from "#user/user.schema";
 import { UserRole } from "#constants";
 import { Comment } from "./comment.schema";
@@ -32,7 +32,19 @@ export class CommentController {
 
         comment.byPostAuthor = req.user && req.user.role === UserRole.Root;
 
-        return await this.commentService.create(comment);
+        const createdComment = await this.commentService.create(comment);
+
+        await sendDiscordMessage(
+            "New comment added",
+            `New comment added by ${createdComment.name} on ${createdComment.postSlug}`,
+            [
+                { name: "Name", value: createdComment.name, inline: true },
+                { name: "Email", value: createdComment.email, inline: true },
+                { name: "Content", value: createdComment.body, inline: false },
+            ],
+        );
+
+        return createdComment;
     }
 
     @HttpCode(HttpStatus.OK)
