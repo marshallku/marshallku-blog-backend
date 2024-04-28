@@ -25,6 +25,10 @@ export class CommentService {
             .exec();
     }
 
+    async findById(id: string) {
+        return await this.commentModel.findById(id).select(["-email", "-password"]).exec();
+    }
+
     async findByPostSlug(postSlug: string): Promise<(Omit<Comment, "parentCommentId"> & { replies: Comment[] })[]> {
         const comments = await this.commentModel
             .find({ postSlug })
