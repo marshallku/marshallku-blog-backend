@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from "@ne
 import { ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
 import { User } from "#user/user.schema";
-import { DAY_TO_SECOND, TOKEN_COOKIE_KEY } from "#constants";
+import { DAY_TO_MILLISECOND, TOKEN_COOKIE_KEY } from "#constants";
 import { Public } from "#utils";
 import { AuthService } from "./auth.service";
 import { SignInRequest, SignInResponse } from "./auth.dto";
@@ -23,7 +23,7 @@ export class AuthController {
             path: "/",
             secure: true,
             sameSite: "none",
-            maxAge: DAY_TO_SECOND,
+            maxAge: DAY_TO_MILLISECOND,
             httpOnly: true,
             domain: process.env.COOKIE_DOMAIN,
         });
@@ -41,7 +41,7 @@ export class AuthController {
             path: "/",
             secure: true,
             sameSite: "none",
-            maxAge: DAY_TO_SECOND,
+            maxAge: DAY_TO_MILLISECOND,
             httpOnly: true,
             domain: process.env.COOKIE_DOMAIN,
         });
