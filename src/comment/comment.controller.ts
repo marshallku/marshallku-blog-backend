@@ -65,11 +65,11 @@ export class CommentController {
         const comment = await this.commentService.findById(id);
 
         if (!comment) {
-            throw new BadRequestException("Comment not found");
+            throw new BadRequestException("잘못된 요청입니다.");
         }
 
         if (!req.user || req.user.role !== UserRole.Root) {
-            throw new BadRequestException("You are not authorized to delete this comment");
+            throw new BadRequestException("잘못된 요청입니다.");
         }
 
         return await this.commentService.remove(id);
