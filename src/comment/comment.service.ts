@@ -16,6 +16,10 @@ export class CommentService {
         return await this.commentModel.findByIdAndDelete(id).exec();
     }
 
+    async update(comment: Comment) {
+        return await this.commentModel.findByIdAndUpdate(comment._id, comment, { new: true }).exec();
+    }
+
     async find(count: number) {
         return await this.commentModel
             .find()

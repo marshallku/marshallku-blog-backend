@@ -6,6 +6,7 @@ import {
     Get,
     HttpCode,
     HttpStatus,
+    Patch,
     Post,
     Query,
     Req,
@@ -17,7 +18,7 @@ import { User } from "#user/user.schema";
 import { UserRole } from "#constants";
 import { Comment } from "./comment.schema";
 import { CommentService } from "./comment.service";
-import { commentAddRequestSchema } from "./comment.validator";
+import { commentAddRequestSchema, commentModifyRequestSchema } from "./comment.validator";
 
 @Controller("comment")
 @ApiTags("Comment API")
@@ -73,6 +74,38 @@ export class CommentController {
         }
 
         return await this.commentService.remove(id);
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Patch("update")
+    @ApiOperation({ summary: "Modify a comment" })
+    async modifyComment(@Req() req: { user?: User }, @Body() comment: Comment) {
+        try {
+            commentModifyRequestSchema.parse(comment);
+        } catch (error) {
+            console.error(error);
+
+            if (error instanceof z.ZodError) {
+                throw new BadRequestException(error.errors[0].message);
+            }
+
+            console.error("Invalid request", comment);
+            throw new BadRequestException("입력을 확인해 주세요.");
+        }
+
+        const targetComment = await this.commentService.findById(comment._id);
+
+        if (!targetComment) {
+            console.error("Comment not found");
+            throw new BadRequestException("잘못된 요청입니다.");
+        }
+
+        if (!req.user || req.user.role !== UserRole.Root) {
+            console.error("Not authorized to modify this comment");
+            throw new BadRequestException("잘못된 요청입니다.");
+        }
+
+        return await this.commentService.update(comment);
     }
 
     @HttpCode(HttpStatus.OK)
