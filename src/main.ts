@@ -1,4 +1,5 @@
 if (process.env.NEW_RELIC_APP_NAME) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require("newrelic");
 }
 
