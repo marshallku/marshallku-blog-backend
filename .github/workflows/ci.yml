@@ -12,13 +12,13 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - uses: marshallku/actions/check-spelling@master
+            - uses: marshallku/actions/analyze/spell@master
     lint:
         name: Check quality with ESLint
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - uses: marshallku/actions/setup-pnpm@master
+            - uses: marshallku/actions/setup/pnpm@master
             - name: Check code quality
               run: pnpm lint
     build:
@@ -26,7 +26,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - uses: marshallku/actions/setup-pnpm@master
+            - uses: marshallku/actions/setup/pnpm@master
             - name: Build apps and packages
               run: pnpm build
     send-notification:
