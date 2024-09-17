@@ -5,7 +5,7 @@ import { UserRole } from "#constants";
 export type UserDocument = HydratedDocument<User>;
 
 @Schema({ timestamps: true })
-export class User extends Document {
+export class User extends Document<string> {
     @Prop({ required: true })
     name: string;
 

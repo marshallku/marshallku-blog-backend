@@ -4,7 +4,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 export type CommentDocument = HydratedDocument<Comment>;
 
 @Schema({ collection: "comment", timestamps: true })
-export class Comment extends Document {
+export class Comment extends Document<string> {
     @Prop({ default: "익명" })
     name: string;
 
