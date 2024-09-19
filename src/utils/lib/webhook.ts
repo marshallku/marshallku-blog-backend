@@ -16,12 +16,14 @@ export async function sendDiscordMessage(title: string, description: string, fie
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                embeds: {
-                    type: "rich",
-                    title,
-                    description,
-                    fields,
-                },
+                embeds: [
+                    {
+                        type: "rich",
+                        title,
+                        description,
+                        fields,
+                    },
+                ],
             }),
         });
         return true;
