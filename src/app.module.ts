@@ -29,6 +29,7 @@ import { JwtModule } from "@nestjs/jwt";
                 MONGO_USERNAME: Joi.string().required(),
                 MONGO_PASSWORD: Joi.string().required(),
                 COOKIE_DOMAIN: Joi.string().required(),
+                DISCORD_WEBHOOK_URL: Joi.string(),
             }),
         }),
         MongooseModule.forRoot(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/`, {
