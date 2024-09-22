@@ -14,7 +14,7 @@ export class UserService {
     }
 
     async findOne(name: string): Promise<User | undefined> {
-        return this.userModel.findOne({ name }).exec();
+        return this.userModel.findOne({ name: { $eq: name } }).exec();
     }
 
     async findOneBy(query: FilterQuery<User>): Promise<User | undefined> {

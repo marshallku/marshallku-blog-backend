@@ -35,7 +35,7 @@ export class CommentService {
 
     async findByPostSlug(postSlug: string): Promise<(Omit<Comment, "parentCommentId"> & { replies: Comment[] })[]> {
         const comments = await this.commentModel
-            .find({ postSlug })
+            .find({ postSlug: { $eq: postSlug } })
             .select(["-email", "-password"])
             .sort({ createdAt: -1 })
             .exec();

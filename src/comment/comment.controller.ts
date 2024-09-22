@@ -63,6 +63,10 @@ export class CommentController {
     @Delete("delete")
     @ApiOperation({ summary: "Delete a comment" })
     async deleteComment(@Req() req: { user?: User }, @Query("id") id: string) {
+        if (typeof id !== "string") {
+            throw new BadRequestException("잘못된 요청입니다.");
+        }
+
         const comment = await this.commentService.findById(id);
 
         if (!comment) {
