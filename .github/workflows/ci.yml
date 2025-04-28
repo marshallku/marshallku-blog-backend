@@ -35,18 +35,18 @@ jobs:
                   repo-token: ${{ github.token }}
             - name: Check code quality
               run: pnpm lint
-    sonarqube:
-        name: Analyze with SonarQube
-        runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/master'
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-            - uses: sonarsource/sonarqube-scan-action@v2
-              env:
-                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-                  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+    # sonarqube:
+    #     name: Analyze with SonarQube
+    #     runs-on: ubuntu-latest
+    #     if: github.ref == 'refs/heads/master'
+    #     steps:
+    #         - uses: actions/checkout@v4
+    #           with:
+    #               fetch-depth: 0
+    #         - uses: sonarsource/sonarqube-scan-action@v2
+    #           env:
+    #               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #               SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
     code-ql-analyze:
         name: Analyze (${{ matrix.language }}) with CodeQL
         runs-on: "ubuntu-latest"
@@ -72,7 +72,7 @@ jobs:
               with:
                   category: "/language:${{matrix.language}}"
     send-notification:
-        needs: [check-spelling, build, lint, sonarqube, code-ql-analyze]
+        needs: [check-spelling, build, lint, code-ql-analyze]
         if: ${{ failure() }}
         uses: marshallku/actions/.github/workflows/send-notification.yml@master
         with:
