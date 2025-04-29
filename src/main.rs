@@ -9,6 +9,7 @@ use utils::log::trace_layer_on_request;
 mod controllers;
 mod database;
 mod env;
+mod models;
 mod utils;
 
 #[tokio::main]
