@@ -1,27 +1,24 @@
 use axum::{extract::State, http::StatusCode, response::IntoResponse};
-use mongodb::bson::{doc, oid::ObjectId};
-use serde::{Deserialize, Serialize};
+use mongodb::bson::doc;
+use serde_json::to_string;
 
-use crate::env::state::AppState;
+use crate::{
+    env::state::AppState,
+    models::{comment::Comment, user::User},
+};
 
-pub async fn get() -> impl IntoResponse {
-    let user = get_user(State(AppState::new().await.unwrap()))
-        .await
-        .unwrap();
+pub async fn get(State(state): State<AppState>) -> impl IntoResponse {
+    let user = get_user(state.clone()).await.unwrap();
+    let comment = get_comment(state).await.unwrap();
 
-    user.name
+    format!(
+        "{{ \"user\": {}, \"comment\": {} }}",
+        to_string(&user).unwrap(),
+        to_string(&comment).unwrap()
+    )
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct User {
-    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
-    pub name: String,
-    pub password: String,
-    pub role: String,
-}
-
-pub async fn get_user(State(state): State<AppState>) -> Result<User, StatusCode> {
+pub async fn get_user(state: AppState) -> Result<User, StatusCode> {
     let collection = state.db.collection::<User>("users");
     let user = collection
         .find_one(doc! {"name": "admin"})
@@ -32,4 +29,21 @@ pub async fn get_user(State(state): State<AppState>) -> Result<User, StatusCode>
         })?;
 
     Ok(user.unwrap())
+}
+
+pub async fn get_comment(state: AppState) -> Result<Comment, StatusCode> {
+    let collection = state.db.collection::<Comment>("comment");
+    let comment = collection
+        .find_one(doc! {"postSlug": "/dev/유튜브-썸네일-추출하기"})
+        .await
+        .map_err(|err| {
+            println!("Error finding comment: {:?}", err);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
+
+    if let Some(comment) = comment {
+        Ok(comment)
+    } else {
+        Err(StatusCode::NOT_FOUND)
+    }
 }
