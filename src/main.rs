@@ -7,6 +7,7 @@ use tracing::{info, Level};
 use utils::log::trace_layer_on_request;
 
 mod controllers;
+mod database;
 mod env;
 mod utils;
 
@@ -17,7 +18,7 @@ async fn main() {
         .compact()
         .init();
 
-    let state = AppState::from_env();
+    let state = AppState::new().await.unwrap();
     let address = format!("{}:{}", state.host, state.port);
     let app = app()
         .layer(

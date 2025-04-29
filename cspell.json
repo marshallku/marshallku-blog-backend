@@ -1,12 +1,9 @@
 {
     "words": [
-        "keyspace",
-        "marshallku",
-        "nestjs",
-        "websockets",
         "actix",
         "addrs",
         "autodocs",
+        "bson",
         "BUILDKIT",
         "callout",
         "chrono",
@@ -17,12 +14,14 @@
         "hookform",
         "iname",
         "instanceof",
+        "keyspace",
         "KHTML",
         "libressl",
         "localforage",
         "Malgun",
         "marshallku",
         "mindepth",
+        "nestjs",
         "nextjs",
         "oneshot",
         "pkgconfig",
@@ -45,6 +44,7 @@
         "vercel",
         "WEBM",
         "WEBP",
+        "websockets",
         "xlink"
     ],
     "ignorePaths": [
