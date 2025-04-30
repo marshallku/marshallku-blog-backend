@@ -4,6 +4,7 @@ use std::borrow::Cow;
 pub struct Env {
     pub port: u16,
     pub host: Cow<'static, str>,
+    pub jwt_secret: Cow<'static, str>,
 }
 
 impl Env {
@@ -16,7 +17,15 @@ impl Env {
             Ok(host) => Cow::Owned(host),
             Err(_) => Cow::Owned("http://localhost/".to_string()),
         };
+        let jwt_secret = match std::env::var("JWT_SECRET") {
+            Ok(jwt_secret) => Cow::Owned(jwt_secret),
+            Err(_) => panic!("JWT_SECRET is not set"),
+        };
 
-        Self { port, host }
+        Self {
+            port,
+            host,
+            jwt_secret,
+        }
     }
 }

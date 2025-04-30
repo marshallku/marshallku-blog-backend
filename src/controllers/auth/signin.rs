@@ -52,7 +52,7 @@ pub async fn signin(
     }
 
     let mut headers = HeaderMap::new();
-    let token = Token::from_user(&user);
+    let token = Token::from_user(&user, &app_state.jwt_secret);
 
     if token.is_err() {
         return (
