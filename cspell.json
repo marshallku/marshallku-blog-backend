@@ -11,6 +11,7 @@
         "codepoint",
         "codepoints",
         "dotenv",
+        "Hmac",
         "hookform",
         "iname",
         "instanceof",
