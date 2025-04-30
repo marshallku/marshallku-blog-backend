@@ -1,8 +1,16 @@
-use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
+use axum::{
+    extract::State,
+    http::{HeaderMap, StatusCode},
+    response::IntoResponse,
+    Json,
+};
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{env::state::AppState, models::user::User, utils::encryption::verify_password};
+use crate::{
+    auth::token::Token, constants::auth::TOKEN_COOKIE_KEY, env::state::AppState,
+    models::user::User, utils::encryption::verify_password,
+};
 
 #[derive(Deserialize)]
 pub struct SignInPayload {
@@ -20,7 +28,8 @@ pub async fn signin(
         return (
             StatusCode::UNAUTHORIZED,
             Json(json!({ "message": "Invalid name or password" })),
-        );
+        )
+            .into_response();
     }
 
     let user = user.unwrap();
@@ -29,7 +38,8 @@ pub async fn signin(
         return (
             StatusCode::UNAUTHORIZED,
             Json(json!({ "message": "Invalid name or password" })),
-        );
+        )
+            .into_response();
     }
 
     let user = user.unwrap();
@@ -37,14 +47,29 @@ pub async fn signin(
         return (
             StatusCode::UNAUTHORIZED,
             Json(json!({ "message": "Invalid name or password" })),
-        );
+        )
+            .into_response();
     }
 
-    // TODO: Need to implement token generation
-    println!("User: {:?}", user);
+    let mut headers = HeaderMap::new();
+    let token = Token::from_user(&user);
+
+    if token.is_err() {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({ "message": "Failed to generate token" })),
+        )
+            .into_response();
+    }
+
+    let token = token.unwrap();
+
+    headers.insert(TOKEN_COOKIE_KEY, token.parse().unwrap());
 
     (
         StatusCode::OK,
+        headers,
         Json(json!({ "message": "Login successful" })),
     )
+        .into_response()
 }
