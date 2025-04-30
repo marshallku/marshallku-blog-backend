@@ -1,6 +1,12 @@
 use chrono::{DateTime, Utc};
-use mongodb::bson::oid::ObjectId;
+use mongodb::{
+    bson::{doc, oid::ObjectId},
+    error::Error,
+    Database,
+};
 use serde::{Deserialize, Serialize};
+
+const COLLECTION_NAME: &str = "users";
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum UserRole {
@@ -10,7 +16,7 @@ pub enum UserRole {
     User,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
@@ -27,4 +33,13 @@ pub struct User {
         with = "bson::serde_helpers::chrono_datetime_as_bson_datetime"
     )]
     pub updated_at: DateTime<Utc>,
+}
+
+impl User {
+    pub async fn find_by_name(db: &Database, name: &str) -> Result<Option<Self>, Error> {
+        let collection = db.collection(COLLECTION_NAME);
+        let user = collection.find_one(doc! {"name": name}).await?;
+
+        Ok(user)
+    }
 }

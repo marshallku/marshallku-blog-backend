@@ -1,7 +1,12 @@
-use axum::{routing::get, Router};
+use axum::{
+    routing::{get, post},
+    Router,
+};
 
 use crate::env::state::AppState;
 
 pub fn app() -> Router<AppState> {
-    Router::new().route("/", get(super::index::get))
+    Router::new()
+        .route("/", get(super::index::get))
+        .route("/auth/signin", post(super::auth::signin::signin))
 }
