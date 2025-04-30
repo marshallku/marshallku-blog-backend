@@ -19,22 +19,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - uses: marshallku/actions/setup/pnpm@master
-            - name: Build apps and packages
-              run: pnpm build
-    lint:
-        name: Lint all packages and apps
-        needs: [build]
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - uses: marshallku/actions/setup/pnpm@master
-            - name: TurboRepo server
-              uses: felixmosh/turborepo-gh-artifacts@v3
-              with:
-                  repo-token: ${{ github.token }}
-            - name: Check code quality
-              run: pnpm lint
+            - uses: actions-rust-lang/setup-rust-toolchain@v1
+            - run: cargo build
     # sonarqube:
     #     name: Analyze with SonarQube
     #     runs-on: ubuntu-latest
@@ -47,32 +33,8 @@ jobs:
     #           env:
     #               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     #               SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-    code-ql-analyze:
-        name: Analyze (${{ matrix.language }}) with CodeQL
-        runs-on: "ubuntu-latest"
-        timeout-minutes: 360
-        permissions:
-            security-events: write
-            packages: read
-        strategy:
-            fail-fast: false
-            matrix:
-                include:
-                    - language: javascript-typescript
-                      build-mode: none
-        steps:
-            - uses: actions/checkout@v4
-            - name: Initialize CodeQL
-              uses: github/codeql-action/init@v3
-              with:
-                  languages: ${{ matrix.language }}
-                  build-mode: ${{ matrix.build-mode }}
-            - name: Perform CodeQL Analysis
-              uses: github/codeql-action/analyze@v3
-              with:
-                  category: "/language:${{matrix.language}}"
     send-notification:
-        needs: [check-spelling, build, lint, code-ql-analyze]
+        needs: [check-spelling, build]
         if: ${{ failure() }}
         uses: marshallku/actions/.github/workflows/send-notification.yml@master
         with:
