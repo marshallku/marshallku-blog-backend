@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use chrono::{DateTime, Utc};
 use mongodb::{
     bson::{doc, oid::ObjectId},
@@ -14,6 +16,12 @@ pub enum UserRole {
     Root,
     /// Other all users
     User,
+}
+
+impl Display for UserRole {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_string())
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
