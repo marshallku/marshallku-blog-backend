@@ -10,6 +10,7 @@ pub struct AppState {
     pub port: u16,
     pub db: Database,
     pub jwt_secret: String,
+    pub cookie_domain: String,
 }
 
 impl AppState {
@@ -24,6 +25,7 @@ impl AppState {
             port: env.port,
             db,
             jwt_secret: env.jwt_secret.into_owned(),
+            cookie_domain: env.cookie_domain.into_owned(),
         })
     }
 }

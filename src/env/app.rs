@@ -5,6 +5,7 @@ pub struct Env {
     pub port: u16,
     pub host: Cow<'static, str>,
     pub jwt_secret: Cow<'static, str>,
+    pub cookie_domain: Cow<'static, str>,
 }
 
 impl Env {
@@ -21,11 +22,16 @@ impl Env {
             Ok(jwt_secret) => Cow::Owned(jwt_secret),
             Err(_) => panic!("JWT_SECRET is not set"),
         };
+        let cookie_domain = match std::env::var("COOKIE_DOMAIN") {
+            Ok(cookie_domain) => Cow::Owned(cookie_domain),
+            Err(_) => Cow::Owned("localhost".to_string()),
+        };
 
         Self {
             port,
             host,
             jwt_secret,
+            cookie_domain,
         }
     }
 }

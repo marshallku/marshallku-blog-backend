@@ -4,8 +4,11 @@ use axum::{
     response::IntoResponse,
     Json,
 };
+use cookie::{Cookie, SameSite};
+use reqwest::header::SET_COOKIE;
 use serde::Deserialize;
 use serde_json::json;
+use time::Duration;
 
 use crate::{
     auth::token::Token, constants::auth::TOKEN_COOKIE_KEY, env::state::AppState,
@@ -19,10 +22,10 @@ pub struct SignInPayload {
 }
 
 pub async fn signin(
-    State(app_state): State<AppState>,
+    State(state): State<AppState>,
     Json(payload): Json<SignInPayload>,
 ) -> impl IntoResponse {
-    let user = User::find_by_name(&app_state.db, &payload.name).await;
+    let user = User::find_by_name(&state.db, &payload.name).await;
 
     if user.is_err() {
         return (
@@ -51,8 +54,7 @@ pub async fn signin(
             .into_response();
     }
 
-    let mut headers = HeaderMap::new();
-    let token = Token::from_user(&user, &app_state.jwt_secret);
+    let token = Token::from_user(&user, &state.jwt_secret);
 
     if token.is_err() {
         return (
@@ -64,7 +66,16 @@ pub async fn signin(
 
     let token = token.unwrap();
 
-    headers.insert(TOKEN_COOKIE_KEY, token.parse().unwrap());
+    let cookie = Cookie::build((TOKEN_COOKIE_KEY, token))
+        .path("/")
+        .secure(true)
+        .http_only(true)
+        .max_age(Duration::days(1))
+        .same_site(SameSite::None)
+        .domain(state.cookie_domain);
+
+    let mut headers = HeaderMap::new();
+    headers.insert(SET_COOKIE, cookie.to_string().parse().unwrap());
 
     (
         StatusCode::OK,
