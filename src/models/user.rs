@@ -42,4 +42,14 @@ impl User {
 
         Ok(user)
     }
+
+    pub async fn create(db: &Database, user: Self) -> Result<Option<Self>, Error> {
+        let collection = db.collection(COLLECTION_NAME);
+        let result = collection.insert_one(user.clone()).await?;
+        let user = collection
+            .find_one(doc! {"_id": result.inserted_id})
+            .await?;
+
+        Ok(user)
+    }
 }
