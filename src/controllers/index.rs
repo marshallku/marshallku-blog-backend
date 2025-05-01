@@ -3,18 +3,23 @@ use mongodb::bson::doc;
 use serde_json::to_string;
 
 use crate::{
+    auth::guard::AuthUser,
     env::state::AppState,
     models::{comment::Comment, user::User},
 };
 
-pub async fn get(State(state): State<AppState>) -> impl IntoResponse {
+pub async fn get(
+    State(state): State<AppState>,
+    AuthUser { user_id }: AuthUser,
+) -> impl IntoResponse {
     let user = get_user(state.clone()).await.unwrap();
     let comment = get_comment(state).await.unwrap();
 
     format!(
-        "{{ \"user\": {}, \"comment\": {} }}",
+        "{{ \"user\": {}, \"comment\": {}, \"current_user_id\": {} }}",
         to_string(&user).unwrap(),
-        to_string(&comment).unwrap()
+        to_string(&comment).unwrap(),
+        user_id
     )
 }
 
