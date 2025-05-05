@@ -12,8 +12,8 @@ use crate::{constants::time::ONE_DAY_IN_SECONDS, models::user::User};
 pub struct TokenClaims {
     pub sub: String,
     pub username: String,
-    pub iat: i64,
-    pub exp: i64,
+    iat: String,
+    exp: String,
 }
 
 pub struct Token {}
@@ -45,7 +45,7 @@ impl Token {
 
         let (_header, claims) = token_data.into();
 
-        if claims.exp < Utc::now().timestamp() {
+        if claims.exp.parse::<i64>()? < Utc::now().timestamp() {
             log::info!("[Token] Expired: {}", claims.sub);
             return Err(Box::new(jwt::Error::InvalidSignature));
         }
