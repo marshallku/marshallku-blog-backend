@@ -1,0 +1,1 @@
+pub const ONE_DAY_IN_SECONDS: i64 = 86400;
