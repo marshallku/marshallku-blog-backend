@@ -26,16 +26,25 @@ impl Display for UserRole {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
+    /// User id
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
+    /// User name
     pub name: String,
+    /// User password
     pub password: String,
+    /// Role of the user
+    ///
+    /// - `Root`: Root user of entire application
+    /// - `User`: Other all users
     pub role: UserRole,
+    /// Creation timestamp, automatically managed
     #[serde(
         rename = "createdAt",
         with = "bson::serde_helpers::chrono_datetime_as_bson_datetime"
     )]
     pub created_at: DateTime<Utc>,
+    /// Last update timestamp, automatically managed
     #[serde(
         rename = "updatedAt",
         with = "bson::serde_helpers::chrono_datetime_as_bson_datetime"
