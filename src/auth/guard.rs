@@ -11,7 +11,7 @@ use super::token::Token;
 
 #[derive(Debug, Clone)]
 pub struct AuthUser {
-    pub user_id: String,
+    pub user: User,
 }
 
 #[async_trait]
@@ -45,8 +45,6 @@ where
 
         let user = user.unwrap();
 
-        Ok(AuthUser {
-            user_id: user.id.unwrap().to_string(),
-        })
+        Ok(AuthUser { user })
     }
 }

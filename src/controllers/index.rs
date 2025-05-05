@@ -8,18 +8,15 @@ use crate::{
     models::{comment::Comment, user::User},
 };
 
-pub async fn get(
-    State(state): State<AppState>,
-    AuthUser { user_id }: AuthUser,
-) -> impl IntoResponse {
-    let user = get_user(state.clone()).await.unwrap();
+pub async fn get(State(state): State<AppState>, AuthUser { user }: AuthUser) -> impl IntoResponse {
+    let selected_user = get_user(state.clone()).await.unwrap();
     let comment = get_comment(state).await.unwrap();
 
     format!(
         "{{ \"user\": {}, \"comment\": {}, \"current_user_id\": {} }}",
-        to_string(&user).unwrap(),
+        to_string(&selected_user).unwrap(),
         to_string(&comment).unwrap(),
-        user_id
+        user.id.unwrap().to_string()
     )
 }
 
