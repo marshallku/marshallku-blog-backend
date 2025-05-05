@@ -67,7 +67,7 @@ impl User {
     pub async fn find_by_id(db: &Database, id: &str) -> Result<Self, Error> {
         let collection = db.collection(COLLECTION_NAME);
         let id = ObjectId::parse_str(id).map_err(|e| {
-            println!("Error parsing token id: {:?}", e);
+            log::error!("[User] Error parsing token id: {:?}", e);
             Error::custom("Invalid token id")
         })?;
         let user = collection.find_one(doc! {"_id": id}).await?;

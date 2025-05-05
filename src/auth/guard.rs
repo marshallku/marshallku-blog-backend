@@ -32,10 +32,8 @@ where
         }
 
         let token = token.unwrap().value();
-        let token_claims = Token::parse(&token, &state.jwt_secret).map_err(|e| {
-            println!("Error parsing token: {:?}", e);
-            (StatusCode::UNAUTHORIZED, "Invalid auth-token cookie")
-        })?;
+        let token_claims = Token::parse(&token, &state.jwt_secret)
+            .map_err(|_| (StatusCode::UNAUTHORIZED, "Invalid auth-token cookie"))?;
 
         let user = User::find_by_id(&state.db, &token_claims.sub).await;
 

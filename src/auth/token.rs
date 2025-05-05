@@ -37,13 +37,16 @@ impl Token {
     pub fn parse(token: &str, secret_key: &str) -> Result<TokenClaims, Box<dyn std::error::Error>> {
         let key: Hmac<Sha256> = Hmac::new_from_slice(secret_key.as_bytes())?;
 
-        let token_data: jwt::Token<Header, TokenClaims, _> = token
-            .verify_with_key(&key)
-            .map_err(|_| Box::new(jwt::Error::InvalidSignature))?;
+        let token_data: jwt::Token<Header, TokenClaims, _> =
+            token.verify_with_key(&key).map_err(|e| {
+                log::error!("[Token] Error verifying token: {:?}", e);
+                Box::new(jwt::Error::InvalidSignature)
+            })?;
 
         let (_header, claims) = token_data.into();
 
         if claims.exp < Utc::now().timestamp() {
+            log::info!("[Token] Expired: {}", claims.sub);
             return Err(Box::new(jwt::Error::InvalidSignature));
         }
 
