@@ -36,16 +36,6 @@ pub async fn signin(
     }
 
     let user = user.unwrap();
-
-    if user.is_none() {
-        return (
-            StatusCode::UNAUTHORIZED,
-            Json(json!({ "message": "Invalid name or password" })),
-        )
-            .into_response();
-    }
-
-    let user = user.unwrap();
     if !verify_password(&payload.password, &user.password).unwrap() {
         return (
             StatusCode::UNAUTHORIZED,

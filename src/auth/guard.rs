@@ -46,7 +46,7 @@ where
         let user = user.unwrap();
 
         Ok(AuthUser {
-            user_id: user.unwrap().id.unwrap().to_string(),
+            user_id: user.id.unwrap().to_string(),
         })
     }
 }

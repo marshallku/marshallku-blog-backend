@@ -48,15 +48,6 @@ pub async fn signup(
 
     let user = user.unwrap();
 
-    if user.is_none() {
-        return (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({ "message": "Failed to create user" })),
-        );
-    }
-
-    let user = user.unwrap();
-
     (
         StatusCode::CREATED,
         Json(json!({
