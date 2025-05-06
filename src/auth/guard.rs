@@ -46,3 +46,41 @@ where
         Ok(AuthUser { user })
     }
 }
+
+#[derive(Debug, Clone)]
+pub struct AuthUserOrPublic {
+    pub user: Option<User>,
+}
+
+#[async_trait]
+impl<S> FromRequestParts<S> for AuthUserOrPublic
+where
+    AppState: FromRef<S>,
+    S: Send + Sync,
+{
+    type Rejection = (StatusCode, &'static str);
+
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
+        let state = AppState::from_ref(state);
+        let cookie_jar = CookieJar::from_headers(&parts.headers);
+        let token = cookie_jar.get(TOKEN_COOKIE_KEY);
+
+        if token.is_none() {
+            return Ok(AuthUserOrPublic { user: None });
+        }
+
+        let token = token.unwrap().value();
+        let token_claims = Token::parse(&token, &state.jwt_secret)
+            .map_err(|_| (StatusCode::UNAUTHORIZED, "Invalid auth-token cookie"))?;
+
+        let user = User::find_by_id(&state.db, &token_claims.sub).await;
+
+        if user.is_err() {
+            return Err((StatusCode::UNAUTHORIZED, "Invalid auth-token cookie"));
+        }
+
+        let user = user.unwrap();
+
+        Ok(AuthUserOrPublic { user: Some(user) })
+    }
+}
