@@ -11,8 +11,8 @@ pub struct Env {
 impl Env {
     pub fn new() -> Self {
         let port = match std::env::var("PORT") {
-            Ok(port) => port.parse().unwrap_or(41890),
-            Err(_) => 41890,
+            Ok(port) => port.parse().unwrap_or(8080),
+            Err(_) => 8080,
         };
         let host = match std::env::var("HOST") {
             Ok(host) => Cow::Owned(host),
