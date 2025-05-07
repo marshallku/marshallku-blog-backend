@@ -53,12 +53,15 @@ pub struct User {
 }
 
 impl User {
-    pub async fn find_by_name(db: &Database, name: &str) -> Result<Self, Error> {
+    pub async fn create(db: &Database, user: Self) -> Result<Self, Error> {
         let collection = db.collection(COLLECTION_NAME);
-        let user = collection.find_one(doc! {"name": name}).await?;
+        let result = collection.insert_one(user.clone()).await?;
+        let user = collection
+            .find_one(doc! {"_id": result.inserted_id})
+            .await?;
 
         if user.is_none() {
-            return Err(Error::custom("User not found"));
+            return Err(Error::custom("Failed to create user"));
         }
 
         Ok(user.unwrap())
@@ -79,15 +82,12 @@ impl User {
         Ok(user.unwrap())
     }
 
-    pub async fn create(db: &Database, user: Self) -> Result<Self, Error> {
+    pub async fn find_by_name(db: &Database, name: &str) -> Result<Self, Error> {
         let collection = db.collection(COLLECTION_NAME);
-        let result = collection.insert_one(user.clone()).await?;
-        let user = collection
-            .find_one(doc! {"_id": result.inserted_id})
-            .await?;
+        let user = collection.find_one(doc! {"name": name}).await?;
 
         if user.is_none() {
-            return Err(Error::custom("Failed to create user"));
+            return Err(Error::custom("User not found"));
         }
 
         Ok(user.unwrap())
