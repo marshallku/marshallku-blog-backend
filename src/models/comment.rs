@@ -1,8 +1,11 @@
+use bson::doc;
 use chrono::{DateTime, Utc};
-use mongodb::bson::oid::ObjectId;
+use mongodb::{bson::oid::ObjectId, error::Error, Database};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+const COLLECTION_NAME: &str = "comment";
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Comment {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<ObjectId>,
@@ -55,4 +58,21 @@ pub struct Comment {
 
 fn default_name() -> String {
     "익명".to_string()
+}
+
+impl Comment {
+    #[allow(dead_code)]
+    pub async fn create(db: &Database, comment: Self) -> Result<Self, Error> {
+        let collection = db.collection(COLLECTION_NAME);
+        let result = collection.insert_one(comment.clone()).await?;
+        let comment = collection
+            .find_one(doc! {"_id": result.inserted_id})
+            .await?;
+
+        if comment.is_none() {
+            return Err(Error::custom("Failed to create comment"));
+        }
+
+        Ok(comment.unwrap())
+    }
 }
