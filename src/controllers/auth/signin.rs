@@ -21,7 +21,7 @@ pub struct SignInPayload {
     pub password: String,
 }
 
-pub async fn signin(
+pub async fn post(
     State(state): State<AppState>,
     Json(payload): Json<SignInPayload>,
 ) -> impl IntoResponse {

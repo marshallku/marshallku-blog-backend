@@ -15,7 +15,7 @@ pub struct SignUpPayload {
     pub password: String,
 }
 
-pub async fn signup(
+pub async fn post(
     State(app_state): State<AppState>,
     Json(payload): Json<SignUpPayload>,
 ) -> impl IntoResponse {
