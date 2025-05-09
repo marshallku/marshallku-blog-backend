@@ -22,10 +22,6 @@ pub struct Comment {
     #[serde(rename = "byPostAuthor", default)]
     pub by_post_author: bool,
 
-    /// Optional password for comment editing/deletion
-    #[serde(default)]
-    pub password: String,
-
     /// Optional email of the commenter
     #[serde(default)]
     pub email: String,
@@ -61,7 +57,6 @@ fn default_name() -> String {
 }
 
 impl Comment {
-    #[allow(dead_code)]
     pub async fn create(db: &Database, comment: Self) -> Result<Self, Error> {
         let collection = db.collection(COLLECTION_NAME);
         let result = collection.insert_one(comment.clone()).await?;
