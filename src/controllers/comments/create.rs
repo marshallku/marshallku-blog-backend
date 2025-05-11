@@ -9,6 +9,7 @@ use crate::{
     auth::guard::AuthUserOrPublic,
     env::state::AppState,
     models::{comment::Comment, user::UserRole},
+    utils::validator::ValidatedJson,
 };
 
 #[derive(Deserialize, Validate)]
@@ -36,12 +37,8 @@ pub struct AddCommentPayload {
 pub async fn post(
     AuthUserOrPublic { user }: AuthUserOrPublic,
     State(state): State<AppState>,
-    Json(payload): Json<AddCommentPayload>,
+    ValidatedJson(payload): ValidatedJson<AddCommentPayload>,
 ) -> impl IntoResponse {
-    if let Err(errors) = payload.validate() {
-        return (StatusCode::BAD_REQUEST, format!("{}", errors)).into_response();
-    }
-
     let is_root = user.is_some() && user.unwrap().role == UserRole::Root;
     let comment = Comment {
         id: None,
