@@ -12,4 +12,5 @@ pub fn app() -> Router<AppState> {
         .route("/auth/signup", post(super::auth::signup::post))
         .route("/auth/status", get(super::auth::status::get))
         .route("/comment/create", post(super::comments::create::post))
+        .route("/comment/list", get(super::comments::list::get))
 }

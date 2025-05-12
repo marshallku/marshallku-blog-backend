@@ -1,5 +1,6 @@
 use bson::doc;
 use chrono::{DateTime, Utc};
+use futures::TryStreamExt;
 use mongodb::{bson::oid::ObjectId, error::Error, Database};
 use serde::{Deserialize, Serialize};
 
@@ -50,6 +51,10 @@ pub struct Comment {
         with = "bson::serde_helpers::chrono_datetime_as_bson_datetime"
     )]
     pub updated_at: DateTime<Utc>,
+
+    /// Replies to this comment
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub replies: Option<Vec<Self>>,
 }
 
 fn default_name() -> String {
@@ -69,5 +74,49 @@ impl Comment {
         }
 
         Ok(comment.unwrap())
+    }
+
+    pub async fn get_by_slug(db: &Database, slug: &str) -> Result<Vec<Self>, Error> {
+        let collection = db.collection::<Self>(COLLECTION_NAME);
+
+        log::info!("Getting comments for slug: {}", slug);
+
+        let mut cursor = collection
+            .find(doc! {"postSlug": slug})
+            .sort(doc! {"createdAt": -1})
+            .await?;
+        let mut all_comments: Vec<Self> = Vec::new();
+        while let Some(comment) = cursor.try_next().await? {
+            all_comments.push(comment);
+        }
+
+        let mut root_comments: Vec<Self> = Vec::new();
+        let mut replies: Vec<Self> = Vec::new();
+
+        for comment in all_comments {
+            if comment.parent_comment_id.is_some()
+                && comment.parent_comment_id.unwrap() != ObjectId::default()
+            {
+                replies.push(comment);
+            } else {
+                root_comments.push(comment);
+            }
+        }
+
+        for comment in &mut root_comments {
+            let mut replies_for_comment: Vec<Self> = Vec::new();
+
+            for reply in &replies {
+                if reply.parent_comment_id.is_some()
+                    && reply.parent_comment_id.unwrap() == comment.id.unwrap()
+                {
+                    replies_for_comment.push(reply.clone());
+                }
+            }
+
+            comment.replies = Some(replies_for_comment);
+        }
+
+        Ok(root_comments)
     }
 }

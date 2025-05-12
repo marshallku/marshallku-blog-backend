@@ -53,6 +53,7 @@ pub async fn post(
         by_post_author: is_root,
         created_at: Utc::now(),
         updated_at: Utc::now(),
+        replies: None,
     };
 
     let comment_create_result = Comment::create(&state.db, comment).await;
