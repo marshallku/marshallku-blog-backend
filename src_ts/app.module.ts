@@ -37,7 +37,7 @@ import { JwtModule } from "@nestjs/jwt";
             connectionName: MONGO_CONNECTION_NAME,
             auth: {
                 username: process.env.MONGO_USERNAME,
-                password: process.env.MONGO_PASSWORD,
+                password: decodeURIComponent(process.env.MONGO_PASSWORD),
             },
             authSource: "admin",
         }),
