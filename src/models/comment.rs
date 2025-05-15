@@ -57,6 +57,39 @@ pub struct Comment {
     pub replies: Option<Vec<Self>>,
 }
 
+/// Response model for backward compatibility
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct CommentResponse {
+    #[serde(rename = "_id")]
+    pub id: String,
+
+    pub name: String,
+
+    #[serde(rename = "postSlug")]
+    pub post_slug: String,
+
+    #[serde(rename = "byPostAuthor")]
+    pub by_post_author: bool,
+
+    pub email: String,
+
+    pub url: String,
+
+    pub body: String,
+
+    #[serde(rename = "parentCommentId")]
+    pub parent_comment_id: Option<String>,
+
+    #[serde(rename = "createdAt")]
+    pub created_at: String,
+
+    #[serde(rename = "updatedAt")]
+    pub updated_at: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub replies: Option<Vec<CommentResponse>>,
+}
+
 fn default_name() -> String {
     "익명".to_string()
 }
@@ -76,7 +109,23 @@ impl Comment {
         Ok(comment.unwrap())
     }
 
-    pub async fn get_by_slug(db: &Database, slug: &str) -> Result<Vec<Self>, Error> {
+    pub fn to_response(&self) -> CommentResponse {
+        CommentResponse {
+            id: self.id.unwrap().to_string(),
+            name: self.name.clone(),
+            post_slug: self.post_slug.clone(),
+            by_post_author: self.by_post_author,
+            email: self.email.clone(),
+            url: self.url.clone(),
+            body: self.body.clone(),
+            parent_comment_id: self.parent_comment_id.clone().map(|id| id.to_string()),
+            created_at: self.created_at.to_rfc3339(),
+            updated_at: self.updated_at.to_rfc3339(),
+            replies: None,
+        }
+    }
+
+    pub async fn get_by_slug(db: &Database, slug: &str) -> Result<Vec<CommentResponse>, Error> {
         let collection = db.collection::<Self>(COLLECTION_NAME);
 
         log::info!("Getting comments for slug: {}", slug);
@@ -90,7 +139,7 @@ impl Comment {
             all_comments.push(comment);
         }
 
-        let mut root_comments: Vec<Self> = Vec::new();
+        let mut root_comments: Vec<CommentResponse> = Vec::new();
         let mut replies: Vec<Self> = Vec::new();
 
         for comment in all_comments {
@@ -99,7 +148,7 @@ impl Comment {
             {
                 replies.push(comment);
             } else {
-                root_comments.push(comment);
+                root_comments.push(comment.to_response());
             }
         }
 
@@ -108,13 +157,18 @@ impl Comment {
 
             for reply in &replies {
                 if reply.parent_comment_id.is_some()
-                    && reply.parent_comment_id.unwrap() == comment.id.unwrap()
+                    && reply.parent_comment_id.unwrap().to_string() == comment.id
                 {
                     replies_for_comment.push(reply.clone());
                 }
             }
 
-            comment.replies = Some(replies_for_comment);
+            comment.replies = Some(
+                replies_for_comment
+                    .into_iter()
+                    .map(|r| r.to_response())
+                    .collect(),
+            );
         }
 
         Ok(root_comments)
