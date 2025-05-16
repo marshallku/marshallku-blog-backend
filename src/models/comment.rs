@@ -173,4 +173,20 @@ impl Comment {
 
         Ok(root_comments)
     }
+
+    pub async fn get_recent(db: &Database, limit: i64) -> Result<Vec<CommentResponse>, Error> {
+        let collection = db.collection::<Self>(COLLECTION_NAME);
+        let mut cursor = collection
+            .find(doc! {})
+            .limit(limit)
+            .sort(doc! {"createdAt": -1})
+            .await?;
+        let mut all_comments: Vec<CommentResponse> = Vec::new();
+
+        while let Some(comment) = cursor.try_next().await? {
+            all_comments.push(comment.to_response());
+        }
+
+        Ok(all_comments)
+    }
 }
