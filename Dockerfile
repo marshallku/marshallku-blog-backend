@@ -1,24 +1,31 @@
-FROM node:20-alpine
+FROM rust:1.80-alpine AS base
 
-ENV NEW_RELIC_NO_CONFIG_FILE=true
-ENV NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true
-ENV NEW_RELIC_LOG=stdout
+WORKDIR /usr/src/marshallku_blog_backend
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+RUN set -eux; \
+    apk add --no-cache musl-dev pkgconfig libressl-dev; \
+    rm -rf $CARGO_HOME/registry
 
-WORKDIR /usr/src/app
+COPY Cargo.* .
 
-COPY package.json ./
-COPY pnpm-lock.yaml ./
+RUN mkdir src && \
+    echo 'fn main() {println!("Hello, world!");}' > src/main.rs && \
+    cargo build --release && \
+    rm target/release/marshallku_blog_backend* && \
+    rm target/release/deps/marshallku_blog_backend* && \
+    rm -rf src
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+FROM base AS builder
 
-COPY . .
+COPY src src
+RUN cargo build --release
 
-EXPOSE 3008
+FROM alpine:3.20.2
 
-RUN pnpm build
+WORKDIR /usr/local/bin
 
-CMD ["pnpm", "start:prod"]
+COPY --from=builder /usr/src/marshallku_blog_backend/target/release/marshallku_blog_backend .
+
+EXPOSE ${PORT}
+
+CMD ["./marshallku_blog_backend"]
