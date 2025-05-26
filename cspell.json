@@ -48,18 +48,5 @@
         "websockets",
         "xlink"
     ],
-    "ignorePaths": [
-        "pnpm-lock.yaml",
-        "package.json",
-        "Dockerfile",
-        "docker-compose.yml",
-        "node_modules/**",
-        "**/node_modules/**",
-        ".git/**",
-        "**/dist/**",
-        "**/coverage/**",
-        "Cargo.lock",
-        "Cargo.toml",
-        "target"
-    ]
+    "ignorePaths": ["Dockerfile", "docker-compose.yml", ".git/**", "Cargo.lock", "Cargo.toml", "target"]
 }
