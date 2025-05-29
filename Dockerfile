@@ -1,4 +1,4 @@
-FROM rust:1.80-alpine AS base
+FROM rust:1.87.0-alpine AS base
 
 WORKDIR /usr/src/marshallku_blog_backend
 
