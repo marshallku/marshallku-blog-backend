@@ -3,7 +3,7 @@ FROM rust:1.87.0-alpine AS base
 WORKDIR /usr/src/marshallku_blog_backend
 
 RUN set -eux; \
-    apk add --no-cache musl-dev pkgconfig libressl-dev; \
+    apk add --no-cache musl-dev pkgconfig openssl-dev openssl-libs-static; \
     rm -rf $CARGO_HOME/registry
 
 COPY Cargo.* .
