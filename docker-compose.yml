@@ -25,6 +25,8 @@ services:
             - database
         ports:
             - 48312:${PORT}
+        env_file:
+            - .env
         environment:
             - MONGO_HOST=172.18.0.1
             - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
