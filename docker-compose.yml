@@ -28,6 +28,7 @@ services:
         env_file:
             - .env
         environment:
+            - HOST=0.0.0.0
             - MONGO_HOST=172.18.0.1
             - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
             - NEW_RELIC_APP_NAME=${NEW_RELIC_APP_NAME}
