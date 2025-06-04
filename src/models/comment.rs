@@ -41,6 +41,7 @@ pub struct Comment {
     /// Creation timestamp, automatically managed
     #[serde(
         rename = "createdAt",
+        default = "default_date",
         with = "bson::serde_helpers::chrono_datetime_as_bson_datetime"
     )]
     pub created_at: DateTime<Utc>,
@@ -48,7 +49,7 @@ pub struct Comment {
     /// Last update timestamp, automatically managed
     #[serde(
         rename = "updatedAt",
-        default = "default_updated_at",
+        default = "default_date",
         with = "bson::serde_helpers::chrono_datetime_as_bson_datetime"
     )]
     pub updated_at: DateTime<Utc>,
@@ -58,7 +59,7 @@ pub struct Comment {
     pub replies: Option<Vec<Self>>,
 }
 
-fn default_updated_at() -> DateTime<Utc> {
+fn default_date() -> DateTime<Utc> {
     Utc::now()
 }
 
