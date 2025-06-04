@@ -16,7 +16,7 @@ pub fn app() -> Router<AppState> {
         .route("/auth/status", get(super::auth::status::get))
         .route("/comment/create", post(super::comments::create::post))
         .route("/comment/list", get(super::comments::list::get))
-        .route("/recent", get(super::recent::index::get))
+        .route("/comment/recent", get(super::recent::index::get))
         .route(
             &format!("{}/auth/signin", API_VERSION_PREFIX),
             post(super::auth::signin::post),
