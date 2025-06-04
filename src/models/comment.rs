@@ -48,6 +48,7 @@ pub struct Comment {
     /// Last update timestamp, automatically managed
     #[serde(
         rename = "updatedAt",
+        default = "default_updated_at",
         with = "bson::serde_helpers::chrono_datetime_as_bson_datetime"
     )]
     pub updated_at: DateTime<Utc>,
@@ -55,6 +56,10 @@ pub struct Comment {
     /// Replies to this comment
     #[serde(skip_serializing_if = "Option::is_none")]
     pub replies: Option<Vec<Self>>,
+}
+
+fn default_updated_at() -> DateTime<Utc> {
+    Utc::now()
 }
 
 /// Response model for backward compatibility
@@ -84,7 +89,7 @@ pub struct CommentResponse {
     pub created_at: String,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub replies: Option<Vec<CommentResponse>>,
@@ -120,7 +125,7 @@ impl Comment {
             body: self.body.clone(),
             parent_comment_id: self.parent_comment_id.clone().map(|id| id.to_string()),
             created_at: self.created_at.to_rfc3339(),
-            updated_at: self.updated_at.to_rfc3339(),
+            updated_at: Some(self.updated_at.to_rfc3339()),
             replies: None,
         }
     }
