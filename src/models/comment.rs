@@ -155,7 +155,7 @@ impl Comment {
         for comment in &mut root_comments {
             let mut replies_for_comment: Vec<Self> = Vec::new();
 
-            for reply in &replies {
+            for reply in replies.iter().rev() {
                 if reply.parent_comment_id.is_some()
                     && reply.parent_comment_id.unwrap().to_string() == comment.id
                 {
