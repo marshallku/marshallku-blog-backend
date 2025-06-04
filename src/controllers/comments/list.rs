@@ -22,6 +22,7 @@ pub async fn get(
     let comments = Comment::get_by_slug(&state.db, &query.slug).await;
 
     if comments.is_err() {
+        log::error!("Failed to get comments: {:?}", comments.err());
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({ "message": "Failed to get comments" })),
