@@ -13,6 +13,8 @@ use tower_http::{
     trace::{DefaultMakeSpan, DefaultOnResponse, TraceLayer},
 };
 use tracing::{info, Level};
+use tracing_subscriber::prelude::*;
+use tracing_subscriber::{fmt, EnvFilter};
 use utils::log::trace_layer_on_request;
 
 mod auth;
@@ -23,12 +25,21 @@ mod env;
 mod models;
 mod utils;
 
+fn setup_tracing() {
+    let fmt_layer = fmt::layer().with_target(false);
+    let filter_layer = EnvFilter::try_from_default_env()
+        .or_else(|_| EnvFilter::try_new("info"))
+        .unwrap();
+
+    tracing_subscriber::registry()
+        .with(filter_layer)
+        .with(fmt_layer)
+        .init();
+}
+
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::fmt()
-        .with_target(false)
-        .compact()
-        .init();
+    setup_tracing();
 
     let state = AppState::new().await.unwrap();
     let address = format!("{}:{}", state.host, state.port);
