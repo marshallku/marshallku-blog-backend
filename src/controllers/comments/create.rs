@@ -9,7 +9,10 @@ use crate::{
     auth::guard::AuthUserOrPublic,
     env::state::AppState,
     models::{comment::Comment, user::UserRole},
-    utils::validator::ValidatedJson,
+    utils::{
+        validator::ValidatedJson,
+        webhook::{send_message, DiscordEmbed, DiscordField},
+    },
 };
 
 #[derive(Deserialize, Validate)]
@@ -56,7 +59,7 @@ pub async fn post(
         replies: None,
     };
 
-    let comment_create_result = Comment::create(&state.db, comment).await;
+    let comment_create_result = Comment::create(&state.db, comment.clone()).await;
 
     if comment_create_result.is_err() {
         log::error!(
@@ -68,6 +71,29 @@ pub async fn post(
             Json(json!({ "message": "Failed to create comment" })),
         )
             .into_response();
+    } else {
+        let _ = send_message(DiscordEmbed {
+            embed_type: "rich".to_string(),
+            title: "New comment added".to_string(),
+            description: format!(
+                "New comment added by {} on {}",
+                comment.name, comment.post_slug
+            )
+            .to_string(),
+            color: None,
+            fields: vec![
+                DiscordField {
+                    name: "name".to_string(),
+                    value: comment.name,
+                },
+                DiscordField {
+                    name: "url".to_string(),
+                    value: comment.url,
+                },
+            ],
+            footer: None,
+        })
+        .await;
     }
 
     (
