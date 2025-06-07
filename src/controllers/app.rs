@@ -10,7 +10,7 @@ pub const API_VERSION_PREFIX: &str = "/api/v2";
 pub fn app() -> Router<AppState> {
     Router::new()
         // TODO: Remove after migration
-        .route("/", get(super::index::get))
+        .route("/health", get(super::health::get))
         .route("/auth/signin", post(super::auth::signin::post))
         .route("/auth/signup", post(super::auth::signup::post))
         .route("/auth/status", get(super::auth::status::get))

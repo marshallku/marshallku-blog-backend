@@ -9,11 +9,11 @@ mod tests {
     };
     use tower::ServiceExt;
 
-    use crate::{controllers::index, env::state::AppState};
+    use crate::{controllers::health, env::state::AppState};
 
     #[tokio::test]
     async fn should_response() {
-        let app: Router<AppState> = Router::new().route("/", get(index::get));
+        let app: Router<AppState> = Router::new().route("/", get(health::get));
         let state = AppState::new().await.unwrap();
         let response = app
             .with_state(state)
