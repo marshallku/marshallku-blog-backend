@@ -59,46 +59,48 @@ pub async fn post(
         replies: None,
     };
 
-    let comment_create_result = Comment::create(&state.db, comment.clone()).await;
+    let comment_create_result = match Comment::create(&state.db, comment.clone()).await {
+        Ok(comment) => {
+            let comment_to_send = comment.clone();
 
-    if comment_create_result.is_err() {
-        log::error!(
-            "Failed to create comment: {}",
-            comment_create_result.err().unwrap()
-        );
-        return (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({ "message": "Failed to create comment" })),
-        )
-            .into_response();
-    } else {
-        let _ = send_message(DiscordEmbed {
-            embed_type: "rich".to_string(),
-            title: "New comment added".to_string(),
-            description: format!(
-                "New comment added by {} on {}",
-                comment.name, comment.post_slug
+            let _ = send_message(DiscordEmbed {
+                embed_type: "rich".to_string(),
+                title: "New comment added".to_string(),
+                description: format!(
+                    "New comment added by {} on {}",
+                    comment_to_send.name, comment_to_send.post_slug
+                )
+                .to_string(),
+                color: None,
+                fields: vec![
+                    DiscordField {
+                        name: "Name".to_string(),
+                        value: comment_to_send.name,
+                    },
+                    DiscordField {
+                        name: "URL".to_string(),
+                        value: comment_to_send.url,
+                    },
+                    DiscordField {
+                        name: "Content".to_string(),
+                        value: comment_to_send.body,
+                    },
+                ],
+                footer: None,
+            })
+            .await;
+
+            comment
+        }
+        Err(e) => {
+            log::error!("Failed to create comment: {}", e);
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({ "message": "Failed to create comment" })),
             )
-            .to_string(),
-            color: None,
-            fields: vec![
-                DiscordField {
-                    name: "name".to_string(),
-                    value: comment.name,
-                },
-                DiscordField {
-                    name: "url".to_string(),
-                    value: comment.url,
-                },
-            ],
-            footer: None,
-        })
-        .await;
-    }
+                .into_response();
+        }
+    };
 
-    (
-        StatusCode::CREATED,
-        Json(json!(comment_create_result.unwrap())),
-    )
-        .into_response()
+    (StatusCode::CREATED, Json(json!(comment_create_result))).into_response()
 }
