@@ -63,7 +63,7 @@ pub async fn post(
         Ok(comment) => {
             let comment_to_send = comment.clone();
 
-            let _ = send_message(DiscordEmbed {
+            send_message(DiscordEmbed {
                 embed_type: "rich".to_string(),
                 title: "New comment added".to_string(),
                 description: format!(
@@ -87,8 +87,7 @@ pub async fn post(
                     },
                 ],
                 footer: None,
-            })
-            .await;
+            });
 
             comment
         }
