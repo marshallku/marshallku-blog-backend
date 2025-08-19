@@ -1,5 +1,5 @@
 use axum::{
-    routing::{get, post},
+    routing::{delete, get, post},
     Router,
 };
 
@@ -17,6 +17,7 @@ pub fn app() -> Router<AppState> {
         .route("/comment/create", post(super::comments::create::post))
         .route("/comment/list", get(super::comments::list::get))
         .route("/comment/recent", get(super::recent::index::get))
+        .route("/comment/:id", delete(super::comments::delete::delete))
         .route(
             &format!("{}/auth/signin", API_VERSION_PREFIX),
             post(super::auth::signin::post),
@@ -36,6 +37,10 @@ pub fn app() -> Router<AppState> {
         .route(
             &format!("{}/comment/list", API_VERSION_PREFIX),
             get(super::comments::list::get),
+        )
+        .route(
+            &format!("{}/comment/:id", API_VERSION_PREFIX),
+            delete(super::comments::delete::delete),
         )
         .route(
             &format!("{}/recent", API_VERSION_PREFIX),

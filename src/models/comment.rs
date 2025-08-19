@@ -195,4 +195,17 @@ impl Comment {
 
         Ok(all_comments)
     }
+
+    pub async fn delete(db: &Database, id: &str) -> Result<(), Error> {
+        let collection = db.collection::<Self>(COLLECTION_NAME);
+        let object_id = ObjectId::parse_str(id).map_err(|_| Error::custom("Invalid comment ID"))?;
+
+        let result = collection.delete_one(doc! {"_id": object_id}).await?;
+
+        if result.deleted_count == 0 {
+            return Err(Error::custom("Comment not found"));
+        }
+
+        Ok(())
+    }
 }
