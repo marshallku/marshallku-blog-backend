@@ -48,5 +48,5 @@
         "websockets",
         "xlink"
     ],
-    "ignorePaths": ["Dockerfile", "docker-compose.yml", ".git/**", "Cargo.lock", "Cargo.toml", "target"]
+    "ignorePaths": ["Dockerfile", "docker-compose.yml", ".git/**", "Cargo.lock", "Cargo.toml", "target", "CLAUDE.md"]
 }
