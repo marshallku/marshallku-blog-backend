@@ -20,7 +20,10 @@ pub enum UserRole {
 
 impl Display for UserRole {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.to_string())
+        match self {
+            UserRole::Root => write!(f, "Root"),
+            UserRole::User => write!(f, "User"),
+        }
     }
 }
 
