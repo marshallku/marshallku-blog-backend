@@ -38,4 +38,8 @@ pub fn app() -> Router<AppState> {
             &format!("{}/recent", API_VERSION_PREFIX),
             get(super::recent::index::get),
         )
+        .route(
+            &format!("{}/thumbnail/*path", API_VERSION_PREFIX),
+            get(super::thumbnail::get::get),
+        )
 }

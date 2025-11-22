@@ -11,6 +11,7 @@
         "codepoint",
         "codepoints",
         "dotenv",
+        "hexdigit",
         "Hmac",
         "hookform",
         "iname",
@@ -48,5 +49,13 @@
         "websockets",
         "xlink"
     ],
-    "ignorePaths": ["Dockerfile", "docker-compose.yml", ".git/**", "Cargo.lock", "Cargo.toml", "target", "CLAUDE.md"]
+    "ignorePaths": [
+        "Dockerfile",
+        "docker-compose.yml",
+        ".git/**",
+        "Cargo.lock",
+        "Cargo.toml",
+        "target",
+        "CLAUDE.md"
+    ]
 }
